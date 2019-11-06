@@ -6,8 +6,8 @@ class DigitNet(nn.Module):
     def __init__(self):
         super(DigitNet, self).__init__()
         self.linear1 = nn.Linear(28 * 28, 16)
-        self.linear2 = nn.Linear(16, 16)
-        self.linear3 = nn.Linear(16, 10)
+        
+        # TODO: add more linear layers
 
     def forward(self, x):
         """
@@ -16,11 +16,11 @@ class DigitNet(nn.Module):
                     the image depicts the digit i. Note that since the elements are probabilities,
                     all elements should be positive and they should sum to 1.
         """
-        x = x.flatten()
-        hidden1 = F.relu(self.linear1(x))
-        hidden2 = F.relu(self.linear2(hidden1))
-        lastlayer = self.linear3(hidden2)
 
-        allPositiveNums = torch.exp(lastlayer)
-        probabilities = allPositiveNums / torch.sum(allPositiveNums)
-        return probabilities
+        # some useful functions:
+        # torch.flatten     https://pytorch.org/docs/stable/torch.html#torch.flatten
+        # F.relu            https://pytorch.org/docs/stable/nn.functional.html#relu
+        # torch.exp         https://pytorch.org/docs/stable/torch.html#torch.exp
+        # torch.sum         https://pytorch.org/docs/stable/torch.html#torch.sum
+
+        pass

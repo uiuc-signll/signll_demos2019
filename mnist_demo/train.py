@@ -16,11 +16,11 @@ for imageMatrix, correctLabel in utils.trainloader:
         assert prob >= 0
     assert 0.9999 < torch.sum(probabilities) < 1.0001
 
-    # print(probabilities[correctLabel])
+    print(probabilities[correctLabel])
     # if this is close to 1, our neural net did a good job
     # if it is close to 0, our neural net should be punished!
 
-    loss = -torch.log(probabilities[correctLabel])
+    loss = 0 # TODO: what should the loss be?
 
     loss.backward()
     optimizer.step()

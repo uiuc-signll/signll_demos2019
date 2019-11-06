@@ -10,7 +10,8 @@ wrongCount = 0
 for imageMatrix, correctLabel in utils.testloader:
     imageMatrix = imageMatrix.reshape(28, 28)
     probabilities = net.forward(imageMatrix)
-    prediction = torch.argmax(probabilities)
+
+    # the model's prediction is the digit with the max probability ... how do we find that?
 
     if prediction == correctLabel:
         correctCount += 1
@@ -19,9 +20,9 @@ for imageMatrix, correctLabel in utils.testloader:
 
     # code below can actually display images so you can see
     # the predictions on individual images!
-    
-    # print("Prediction", prediction)
-    # plt.imshow(imageMatrix)
-    # plt.show()
+
+    print("Prediction", prediction)
+    plt.imshow(imageMatrix)
+    plt.show()
 
 print(correctCount, wrongCount)
