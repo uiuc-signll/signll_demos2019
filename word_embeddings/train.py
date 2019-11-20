@@ -32,41 +32,29 @@ avg_review_length = int(df['word_count'].mean())
 
 print('average review length is ' + str(avg_review_length))
 
+# a function gets word embeddings for a given review
+def get_embeddings(review, review_length):
+    # Checkpoint: how do we get embeddings from the model?
+    # What do we do if the length of the review is less than review_length?
+    if len(review) > review_length:
+        pass
+    elif len(review) < review_length:
+        # some useful functions:
+        # np.zeroes(shape)
+        # np.concatenate((a1, a2, ...))
+        pass
+
+# create a column in our dataframe for word embeddings
+df['embeddings'] = df['tokenized'].apply(lambda review: get_embeddings(review,  avg_review_length))
+
 # split up our dataset into train and test sets using a handy sklearn function
-X_train, X_test, y_train, y_test = train_test_split(df['tokenized'].values, df['pos_neg'].values, test_size=0.2)
-
-# convert scalar y values into arrays where first element represents the probability that the review is positive,
-# and the second element represents the probability of the review being negative.
-y_train = np.array([np.array([1.0 if x > 0 else 0.0, 1.0 if x <= 0 else 0.0]) for x in y_train])
-y_test = np.array([np.array([1.0 if x > 0 else 0.0, 1.0 if x <= 0 else 0.0]) for x in y_test])
-
-# a function that returns an array of word embeddings for the given input list of reviews
-# each list of embeddings in output list must contain review_length embeddings
-def get_embeddings(reviews, review_length):
-    review_embeddings = []
-
-    for review in reviews:
-        # Checkpoint: how do we get embeddings from the model?
-        # What do we do if the length of the review is less than review_length?
-        if len(review) > review_length:
-            pass
-        elif len(review) < review_length:
-            # some useful functions:
-            # np.zeroes(shape)
-            # np.concatenate((a1, a2, ...))
-            pass
-    
-    return review_embeddings
-
-# get embeddings for train and test set
-X_train_embeddings = get_embeddings(X_train, avg_review_length)
-X_test_embeddings = get_embeddings(X_test, avg_review_length)
+X_train, X_test, y_train, y_test = train_test_split(df['embeddings'].values, df['pos_neg'].values, test_size=0.2)
 
 # Checkpoint: how do we initialize our neural network?
 # Go to model.py to finish implementing YelpNet!
 net = YelpNet()
 
-review = Variable(torch.Tensor(X_test_embeddings[0]))
+review = Variable(torch.Tensor(X_test[0]))
 prediction = net.forward(review)
 
 # Sanity check - what should shape of prediction be?
@@ -74,14 +62,13 @@ print(prediction)
 
 optimizer = torch.optim.SGD(net.parameters(), lr=0.005)
 
-for i in range(len(X_train_embeddings)):
-    review = Variable(torch.Tensor(X_train_embeddings[i]))
-    correct_label = 0 if y_train[i][0] == 1 else 1
+for i in range(len(X_train)):
+    review = Variable(torch.Tensor(X_train[i]))
+    correct_label = y_train[i]
     
     prediction = net.forward(review)
 
     # Checkpoint: what should our loss function be?
-    # hint: check the mnist_demo from a couple weeks ago!
     loss = None
 
     loss.backward()
@@ -94,19 +81,12 @@ torch.save(net, "trained_net.pb")
 correct_count = 0
 wrong_count = 0
 
-for i in range(len(X_test_embeddings)):
-    review = Variable(torch.Tensor(X_test_embeddings[i]))
-    # Checkpoint: what is the correct label for X_test_embeddings[i]
-    correct_label = None
-    predictions = net.forward(review)
+for i in range(len(X_test)):
+    review = Variable(torch.Tensor(X_test[i]))
+    correct_label = y_test[i]
+    prediction = net.forward(review)
 
-    # the model's prediction is the category with the max probability
-    value, prediction = predictions.max(0)
-
-    if prediction == correct_label:
-        correct_count += 1
-    else:
-        wrong_count += 1
+    # Checkpoint: how do we check whether the prediction is right?
 
 print(correct_count, wrong_count)
 print(correct_count / (correct_count + wrong_count))
