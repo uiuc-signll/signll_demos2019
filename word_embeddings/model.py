@@ -12,9 +12,10 @@ class YelpNet(nn.Module):
 
     def forward(self, x):
         """
-        @param x    a tensor with shape (99, 300) representing the review
-        @return     a 1D tensor of length 10, where the ith element is the predicted probability that
-                    the image depicts the digit i. Note that since the elements are probabilities,
+        @param x    a tensor with shape (document_dim, embedding_dim) representing the review
+        @return     a 1D tensor of length 2, where the 1st element is the predicted probability that
+                    the review is positive, and the 2nd element is the predicted probability that
+                    the  review is negative. Note that since the elements are probabilities,
                     all elements should be positive and they should sum to 1.
         """
 

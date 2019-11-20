@@ -49,9 +49,12 @@ def get_embeddings(reviews, review_length):
         # Checkpoint: how do we get embeddings from the model?
         # What do we do if the length of the review is less than review_length?
         if len(review) > review_length:
-            raise NotImplementedError()
+            pass
         elif len(review) < review_length:
-            raise NotImplementedError()
+            # some useful functions:
+            # np.zeroes(shape)
+            # np.concatenate((a1, a2, ...))
+            pass
     
     return review_embeddings
 
