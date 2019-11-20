@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import re
 
 from model import YelpNet
 
@@ -14,6 +15,9 @@ model = KeyedVectors.load_word2vec_format(filename, binary=True)
 
 # load csv
 df = pd.read_csv('../yelp_demo/yelp_reviews.csv')
+
+# strip punctuation, lowercase
+df['text'] = df['text'].apply(lambda x: re.sub('[^A-Za-z0-9]+', '', x).lower())
 
 # tokenize each review
 df['tokenized'] = df['text'].apply(lambda x: x.split())
@@ -31,7 +35,13 @@ avg_review_length = int(df['word_count'].mean())
 
 print('average review length is ' + str(avg_review_length))
 
-# a function gets word embeddings for a given review
+# Should return a 2-D array of shape (review_length, embedding_dimension) 
+# In order to make all of our input arrays the same size, we must crop
+# reviews that are longer than review_length and add padding to reviews 
+# that are shorter than review_length.
+#
+# The padding added to short vectors should be zero vectors of length 300
+# (the same length as the word embedding)
 def get_embeddings(review, review_length):
     # Checkpoint: how do we get embeddings from the model?
     # What do we do if the length of the review is greater than review_length? 
@@ -40,8 +50,10 @@ def get_embeddings(review, review_length):
         pass
     elif len(review) < review_length:
         # some useful functions:
-        # np.zeroes(shape) https://docs.scipy.org/doc/numpy/reference/generated/numpy.zeros.html
-        # np.concatenate((a1, a2, ...)) https://docs.scipy.org/doc/numpy/reference/generated/numpy.concatenate.html
+        # np.zeroes(shape)
+        # https://docs.scipy.org/doc/numpy/reference/generated/numpy.zeros.html
+        # np.concatenate((a1, a2, ...))
+        # https://docs.scipy.org/doc/numpy/reference/generated/numpy.concatenate.html
         pass
 
 # create a column in our dataframe for word embeddings
@@ -54,7 +66,7 @@ X_train, X_test, y_train, y_test = train_test_split(df['embeddings'].values, df[
 # Go to model.py to finish implementing YelpNet!
 net = YelpNet()
 
-review = Variable(torch.Tensor(X_test[0]))
+review = torch.Tensor(X_test[0])
 prediction = net.forward(review)
 
 # Sanity check - what should shape of prediction be?
@@ -63,7 +75,7 @@ print(prediction)
 optimizer = torch.optim.SGD(net.parameters(), lr=0.005)
 
 for i in range(len(X_train)):
-    review = Variable(torch.Tensor(X_train[i]))
+    review = torch.Tensor(X_train[i])
     correct_label = y_train[i]
     
     prediction = net.forward(review)
