@@ -5,7 +5,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.autograd import Variable
 
 from model import YelpNet
 
@@ -35,13 +34,14 @@ print('average review length is ' + str(avg_review_length))
 # a function gets word embeddings for a given review
 def get_embeddings(review, review_length):
     # Checkpoint: how do we get embeddings from the model?
-    # What do we do if the length of the review is less than review_length?
+    # What do we do if the length of the review is greater than review_length? 
+    # Less than review_length?
     if len(review) > review_length:
         pass
     elif len(review) < review_length:
         # some useful functions:
-        # np.zeroes(shape)
-        # np.concatenate((a1, a2, ...))
+        # np.zeroes(shape) https://docs.scipy.org/doc/numpy/reference/generated/numpy.zeros.html
+        # np.concatenate((a1, a2, ...)) https://docs.scipy.org/doc/numpy/reference/generated/numpy.concatenate.html
         pass
 
 # create a column in our dataframe for word embeddings
@@ -82,7 +82,7 @@ correct_count = 0
 wrong_count = 0
 
 for i in range(len(X_test)):
-    review = Variable(torch.Tensor(X_test[i]))
+    review = torch.Tensor(X_test[i])
     correct_label = y_test[i]
     prediction = net.forward(review)
 
