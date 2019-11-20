@@ -87,3 +87,23 @@ for i in range(len(X_train_embeddings)):
 
 # Save model
 torch.save(net, "trained_net.pb")
+
+correct_count = 0
+wrong_count = 0
+
+for i in range(len(X_test_embeddings)):
+    review = Variable(torch.Tensor(X_test_embeddings[i]))
+    # Checkpoint: what is the correct label for X_test_embeddings[i]
+    correct_label = None
+    predictions = net.forward(review)
+
+    # the model's prediction is the category with the max probability
+    value, prediction = predictions.max(0)
+
+    if prediction == correct_label:
+        correct_count += 1
+    else:
+        wrong_count += 1
+
+print(correct_count, wrong_count)
+print(correct_count / (correct_count + wrong_count))
